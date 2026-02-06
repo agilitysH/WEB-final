@@ -1,9 +1,10 @@
 // server.js
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import db from "./app/models/index.js";
-import authRoutes from "./app/routes/auth.routes.js";
-import userRoutes from "./app/routes/user.routes.js";
+import db from "./models/index.js";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
  
 const app = express();
  
@@ -25,12 +26,17 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/test", userRoutes);
  
-// Set port and start server
-const PORT = process.env.PORT || 8080;
+// Set port, MongoURI and start server
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+    console.error("MONGO_URI is not set. Add it to .env or the environment.");
+    process.exit(1);
+}
  
 // Connect to MongoDB and start the server
 db.mongoose
-    .connect(`mongodb://${db.config.HOST}:${db.config.PORT}/${db.config.DB}`)
+    .connect(MONGO_URI)
     .then(() => {
         console.log("Successfully connected to MongoDB.");
         // Initialize roles in the database
