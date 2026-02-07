@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>AniNexus Control Deck</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="styles.css" />
+        <script src="app.js" defer></script>
+    </head>
+    <body>
+        <div class="ambient-grid"></div>
+        <header class="hero">
+            <nav class="top-nav">
+                <div class="brand">AniNexus</div>
+                <div class="nav-links">
+                    <a href="#anime">Anime</a>
+                    <a href="#watchlist">Watchlist</a>
+                    <a href="#reviews">Reviews</a>
+                    <a class="chip" href="/api">API List</a>
+                </div>
+            </nav>
+            <div class="hero-content">
+                <div>
+                    <p class="eyebrow">External API + MongoDB</p>
+                    <h1>Control deck for anime discovery, watchlists, and reviews.</h1>
+                    <p class="subtitle">
+                        Search Jikan or MAL, curate your watchlist, and build community reviews
+                        without leaving one cohesive workspace.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="btn primary" href="#anime">Start Exploring</a>
+                        <a class="btn ghost" href="#watchlist">Manage Watchlist</a>
+                    </div>
+                </div>
+                <div class="hero-panel">
+                    <div class="hero-metric">
+                        <span>Providers</span>
+                        <strong>Jikan + MAL</strong>
+                    </div>
+                    <div class="hero-metric">
+                        <span>Collections</span>
+                        <strong>Watchlist & Reviews</strong>
+                    </div>
+                    <div class="hero-metric">
+                        <span>API Status</span>
+                        <strong>Live on /api</strong>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="anime" class="section">
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">Anime</p>
+                        <h2>Anime Atlas</h2>
+                    </div>
+                    <p class="section-note">
+                        Search by title, genre, or popularity. Toggle providers when needed.
+                    </p>
+                </div>
+                <div class="panel-grid">
+                    <form id="anime-search-form" class="panel">
+                        <div class="panel-title">Search Filters</div>
+                        <label>
+                            Title
+                            <input type="text" name="title" placeholder="e.g. Vinland Saga" />
+                        </label>
+                        <label>
+                            Genre
+                            <select name="genre">
+                                <option value="">Any genre</option>
+                                <option value="1">Action</option>
+                                <option value="2">Adventure</option>
+                                <option value="4">Comedy</option>
+                                <option value="8">Drama</option>
+                                <option value="10">Fantasy</option>
+                                <option value="14">Horror</option>
+                                <option value="7">Mystery</option>
+                                <option value="22">Romance</option>
+                                <option value="24">Sci-Fi</option>
+                                <option value="27">Shounen</option>
+                                <option value="23">School</option>
+                                <option value="30">Sports</option>
+                                <option value="37">Supernatural</option>
+                                <option value="36">Slice of Life</option>
+                            </select>
+                        </label>
+                        <label>
+                            Provider
+                            <select name="provider">
+                                <option value="jikan">Jikan</option>
+                                <option value="mal">MyAnimeList</option>
+                            </select>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" name="popular" />
+                            <span>Sort by popularity</span>
+                        </label>
+                        <div class="panel-actions">
+                            <button class="btn primary" type="submit">Search</button>
+                            <button class="btn ghost" id="anime-trending-btn" type="button">
+                                Trending
+                            </button>
+                        </div>
+                        <div id="anime-status" class="status" aria-live="polite"></div>
+                    </form>
+                    <div class="panel results-panel">
+                        <div class="panel-title">Results</div>
+                        <div id="anime-results" class="card-grid empty-state">
+                            <p>Run a search to populate results.</p>
+                        </div>
+                    </div>
+                    <div class="panel detail-panel">
+                        <div class="panel-title">Details</div>
+                        <div id="anime-detail" class="detail-card empty-state">
+                            <p>Select a card to view details.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="watchlist" class="section alt">
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">Watchlist</p>
+                        <h2>Watchlist Hub</h2>
+                    </div>
+                    <p class="section-note">
+                        Track progress, update status, and keep scores in sync.
+                    </p>
+                </div>
+                <div class="panel-grid two-col">
+                    <form id="watchlist-form" class="panel">
+                        <div class="panel-title">Add to Watchlist</div>
+                        <label>
+                            User ID
+                            <input type="text" name="userId" id="watchlist-user" placeholder="Mongo user id" />
+                        </label>
+                        <label>
+                            Anime ID
+                            <input type="number" name="animeId" required />
+                        </label>
+                        <label>
+                            Title
+                            <input type="text" name="title" required />
+                        </label>
+                        <label>
+                            Status
+                            <select name="status" required>
+                                <option value="Watching">Watching</option>
+                                <option value="Plan to Watch">Plan to Watch</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Dropped">Dropped</option>
+                            </select>
+                        </label>
+                        <label>
+                            Episodes Watched
+                            <input type="number" name="episodesWatched" min="0" value="0" />
+                        </label>
+                        <label>
+                            Score
+                            <input type="number" name="score" min="1" max="10" placeholder="1-10" />
+                        </label>
+                        <div class="panel-actions">
+                            <button class="btn primary" type="submit">Add</button>
+                            <button class="btn ghost" id="watchlist-load-btn" type="button">
+                                Load List
+                            </button>
+                        </div>
+                        <div id="watchlist-status" class="status" aria-live="polite"></div>
+                    </form>
+                    <div class="panel results-panel">
+                        <div class="panel-title">Current Watchlist</div>
+                        <div id="watchlist-results" class="card-grid empty-state">
+                            <p>No watchlist items loaded.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="reviews" class="section">
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">Reviews</p>
+                        <h2>Review Studio</h2>
+                    </div>
+                    <p class="section-note">Publish, edit, and like reviews by anime ID.</p>
+                </div>
+                <div class="panel-grid two-col">
+                    <form id="review-form" class="panel">
+                        <div class="panel-title">Create Review</div>
+                        <label>
+                            User ID
+                            <input type="text" name="userId" id="reviews-user" placeholder="Mongo user id" />
+                        </label>
+                        <label>
+                            Anime ID
+                            <input type="number" name="animeId" id="reviews-anime" required />
+                        </label>
+                        <label>
+                            Rating
+                            <input type="number" name="rating" min="1" max="10" required />
+                        </label>
+                        <label>
+                            Review
+                            <textarea name="reviewText" rows="4" required></textarea>
+                        </label>
+                        <div class="panel-actions">
+                            <button class="btn primary" type="submit">Publish</button>
+                            <button class="btn ghost" id="reviews-load-btn" type="button">
+                                Load Reviews
+                            </button>
+                        </div>
+                        <div id="reviews-status" class="status" aria-live="polite"></div>
+                    </form>
+                    <div class="panel results-panel">
+                        <div class="panel-title">Community Reviews</div>
+                        <div id="reviews-results" class="card-grid empty-state">
+                            <p>No reviews loaded.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>
