@@ -1,4 +1,4 @@
-// app/middlewares/index.js
+// app/middleware/index.js
 import authJwt from "./authJwt.js";
 import verifySignUp from "./verifySignUp.js";
  

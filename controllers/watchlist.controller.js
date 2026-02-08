@@ -4,7 +4,8 @@ import { watchlistItemView, watchlistListView } from "../view/watchlist.view.js"
 const { Watchlist } = db;
 
 export const addToWatchlist = async (req, res) => {
-    const { userId, animeId, title, status, episodesWatched, score } = req.body;
+    const { animeId, title, status, episodesWatched, score } = req.body;
+    const userId = req.body.userId || req.userId;
 
     if (!userId || !animeId || !title || !status) {
         return res.status(400).json({ message: "userId, animeId, title, and status are required." });
@@ -27,7 +28,7 @@ export const addToWatchlist = async (req, res) => {
 };
 
 export const getWatchlist = async (req, res) => {
-    const { userId } = req.query;
+    const userId = req.query.userId || req.userId;
 
     if (!userId) {
         return res.status(400).json({ message: "userId query parameter is required." });

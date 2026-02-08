@@ -4,7 +4,8 @@ import { reviewItemView, reviewListView } from "../view/review.view.js";
 const { Review } = db;
 
 export const createReview = async (req, res) => {
-    const { userId, animeId, reviewText, rating } = req.body;
+    const { animeId, reviewText, rating } = req.body;
+    const userId = req.body.userId || req.userId;
 
     if (!userId || !animeId || !reviewText || rating === undefined) {
         return res.status(400).json({ message: "userId, animeId, reviewText, and rating are required." });
@@ -80,7 +81,7 @@ export const deleteReview = async (req, res) => {
 
 export const toggleReviewLike = async (req, res) => {
     const { id } = req.params;
-    const { userId } = req.body;
+    const userId = req.body.userId || req.userId;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required." });

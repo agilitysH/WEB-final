@@ -416,7 +416,8 @@ const handleWatchlist = () => {
     form?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(form);
-        const userId = formData.get("userId")?.toString().trim();
+        const userId =
+            getStoredUserId() || formData.get("userId")?.toString().trim();
         const animeId = Number(formData.get("animeId"));
         const title = formData.get("title")?.toString().trim();
         const statusValue = formData.get("status")?.toString();
@@ -466,7 +467,7 @@ const handleWatchlist = () => {
     });
 
     const loadWatchlist = async () => {
-        const userId = $("#watchlist-user")?.value.trim();
+        const userId = $("#watchlist-user")?.value.trim() || getStoredUserId();
         if (!userId) {
             setStatus(status, "User ID is required to load watchlist.", "error");
             return;
@@ -560,7 +561,8 @@ const handleReviews = () => {
     form?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(form);
-        const userId = formData.get("userId")?.toString().trim();
+        const userId =
+            getStoredUserId() || formData.get("userId")?.toString().trim();
         const animeId = Number(formData.get("animeId"));
         const rating = Number(formData.get("rating"));
         const reviewText = formData.get("reviewText")?.toString().trim();
@@ -624,7 +626,7 @@ const handleReviews = () => {
         }
 
         if (likeBtn) {
-            const userId = $("#reviews-user")?.value.trim();
+            const userId = $("#reviews-user")?.value.trim() || getStoredUserId();
             if (!userId) {
                 setStatus(status, "User ID is required to like.", "error");
                 return;
