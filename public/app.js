@@ -1,3 +1,10 @@
+const TOKEN_KEY = "token";
+const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
+const setToken = (t) => localStorage.setItem(TOKEN_KEY, t);
+const clearToken = () => localStorage.removeItem(TOKEN_KEY);
+
+
+
 const API_BASE = "/api";
 
 const $ = (selector) => document.querySelector(selector);
@@ -16,12 +23,17 @@ const parseJson = async (response) => {
 };
 
 const request = async (path, options = {}) => {
+const token = getToken();
+
+  const headers = {
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
     const response = await fetch(path, options);
     const data = await parseJson(response);
     if (!response.ok) {
         const message = data?.message || "Request failed.";
-        throw new Error(message);
-    }
+        throw new Error(message);}
     return data;
 };
 
@@ -58,7 +70,30 @@ const syncUserId = (value) => {
     }
 };
 
-const getStoredUserId = () => localStorage.getItem("userId") || "";
+async function doLogin(username, password) {
+  const data = await request(`${API_BASE}/auth/signin`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  setToken(data.accessToken);
+  setUserId(data.id); 
+  return data;
+}
+
+async function doRegister(username, email, password) {
+  return request(`${API_BASE}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, email, password }),
+  });
+}
+
+function logout() {
+  clearToken();
+  clearUserId();
+}
 
 const initUserInputs = () => {
     const stored = getStoredUserId();

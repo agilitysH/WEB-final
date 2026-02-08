@@ -17,7 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  
 // Middleware configuration
 const corsOptions = {
-    origin: "http://localhost:8081",
+    origin: "http://localhost:5500",
 };
  
 app.use(cors(corsOptions));
