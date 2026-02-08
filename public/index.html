@@ -24,6 +24,12 @@
                     <a href="#reviews">Reviews</a>
                     <a class="chip" href="/api">API List</a>
                 </div>
+                <div class="nav-auth">
+                    <a class="btn ghost" href="#auth" id="nav-login">Login</a>
+                    <a class="btn ghost" href="#auth" id="nav-register">Register</a>
+                    <button class="btn ghost" type="button" id="nav-logout" style="display:none;">Logout</button>
+                    <span class="chip" id="nav-user" style="display:none;"></span>
+                </div>
             </nav>
             <div class="hero-content">
                 <div>
@@ -56,6 +62,55 @@
         </header>
 
         <main>
+
+            <section id="auth" class="section">
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">Account</p>
+                        <h2>Login / Register</h2>
+                    </div>
+                    <p class="section-note" id="auth-state">Not signed in.</p>
+                </div>
+
+                <div class="panel-grid two-col">
+                    <form id="login-form" class="panel">
+                        <div class="panel-title">Login</div>
+                        <label>
+                            Username
+                            <input name="username" required />
+                        </label>
+                        <label>
+                            Password
+                            <input name="password" type="password" required />
+                        </label>
+                        <div class="panel-actions">
+                            <button class="btn primary" type="submit">Login</button>
+                            <button class="btn ghost" type="button" id="logout-btn" style="display:none;">Logout</button>
+                        </div>
+                        <div id="login-status" class="status" aria-live="polite"></div>
+                    </form>
+
+                    <form id="register-form" class="panel">
+                        <div class="panel-title">Register</div>
+                        <label>
+                            Username
+                            <input name="username" required />
+                        </label>
+                        <label>
+                            Email
+                            <input name="email" type="email" required />
+                        </label>
+                        <label>
+                            Password
+                            <input name="password" type="password" required />
+                        </label>
+                        <div class="panel-actions">
+                            <button class="btn primary" type="submit">Create account</button>
+                        </div>
+                        <div id="register-status" class="status" aria-live="polite"></div>
+                    </form>
+                </div>
+            </section>
             <section id="anime" class="section">
                 <div class="section-header">
                     <div>

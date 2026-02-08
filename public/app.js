@@ -1,11 +1,11 @@
+const API_BASE = "/api";
+
+
 const TOKEN_KEY = "token";
 const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
-const setToken = (t) => localStorage.setItem(TOKEN_KEY, t);
+const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
 const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
-
-
-const API_BASE = "/api";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
@@ -23,17 +23,18 @@ const parseJson = async (response) => {
 };
 
 const request = async (path, options = {}) => {
-const token = getToken();
+    const token = getToken();
+    const headers = {
+        ...(options.headers || {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
-  const headers = {
-    ...(options.headers || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-    const response = await fetch(path, options);
+    const response = await fetch(path, { ...options, headers });
     const data = await parseJson(response);
     if (!response.ok) {
         const message = data?.message || "Request failed.";
-        throw new Error(message);}
+        throw new Error(message);
+    }
     return data;
 };
 
@@ -70,30 +71,7 @@ const syncUserId = (value) => {
     }
 };
 
-async function doLogin(username, password) {
-  const data = await request(`${API_BASE}/auth/signin`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
-
-  setToken(data.accessToken);
-  setUserId(data.id); 
-  return data;
-}
-
-async function doRegister(username, email, password) {
-  return request(`${API_BASE}/auth/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password }),
-  });
-}
-
-function logout() {
-  clearToken();
-  clearUserId();
-}
+const getStoredUserId = () => localStorage.getItem("userId") || "";
 
 const initUserInputs = () => {
     const stored = getStoredUserId();
@@ -109,6 +87,121 @@ const initUserInputs = () => {
     watchlistUser?.addEventListener("input", (event) => syncUserId(event.target.value.trim()));
     reviewsUser?.addEventListener("input", (event) => syncUserId(event.target.value.trim()));
 };
+
+
+const updateAuthUI = (user) => {
+    const authState = $("#auth-state");
+    const navUser = $("#nav-user");
+    const navLogout = $("#nav-logout");
+    const logoutBtn = $("#logout-btn");
+    const navLogin = $("#nav-login");
+    const navRegister = $("#nav-register");
+
+    const loggedIn = !!getToken() && !!getStoredUserId();
+
+    if (authState) authState.textContent = loggedIn ? `Signed in as ${user?.username || "user"} ✅` : "Not signed in.";
+    if (navUser) {
+        navUser.style.display = loggedIn ? "inline-flex" : "none";
+        navUser.textContent = loggedIn ? (user?.username || "Signed in") : "";
+    }
+    if (navLogout) navLogout.style.display = loggedIn ? "inline-flex" : "none";
+    if (logoutBtn) logoutBtn.style.display = loggedIn ? "inline-flex" : "none";
+    if (navLogin) navLogin.style.display = loggedIn ? "none" : "inline-flex";
+    if (navRegister) navRegister.style.display = loggedIn ? "none" : "inline-flex";
+
+    // If logged in, lock the "User ID" fields to the stored id (still mock-friendly).
+    const uid = getStoredUserId();
+    const watchlistUser = $("#watchlist-user");
+    const reviewsUser = $("#reviews-user");
+    if (watchlistUser) {
+        watchlistUser.value = uid || watchlistUser.value;
+        watchlistUser.disabled = loggedIn;
+    }
+    if (reviewsUser) {
+        reviewsUser.value = uid || reviewsUser.value;
+        reviewsUser.disabled = loggedIn;
+    }
+};
+
+const handleAuth = () => {
+    const loginForm = $("#login-form");
+    const registerForm = $("#register-form");
+    const loginStatus = $("#login-status");
+    const registerStatus = $("#register-status");
+
+    const doLogout = () => {
+        clearToken();
+        localStorage.removeItem("userId");
+        updateAuthUI(null);
+    };
+
+    $("#nav-logout")?.addEventListener("click", doLogout);
+    $("#logout-btn")?.addEventListener("click", doLogout);
+
+    loginForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(loginForm);
+        const username = fd.get("username")?.toString().trim();
+        const password = fd.get("password")?.toString();
+
+        setStatus(loginStatus, "Signing in...", null);
+        try {
+            const data = await request(`${API_BASE}/auth/signin`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!data?.accessToken || !data?.id) {
+                throw new Error("Login succeeded but server response is missing token/id.");
+            }
+
+            setToken(data.accessToken);
+            syncUserId(data.id);
+            updateAuthUI({ username: data.username });
+
+            setStatus(loginStatus, "Logged in.", "success");
+
+            // Auto-load watchlist on login (main page behavior)
+            window.loadWatchlist?.();
+        } catch (err) {
+            doLogout();
+            setStatus(loginStatus, err.message, "error");
+        }
+    });
+
+    registerForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(registerForm);
+        const payload = {
+            username: fd.get("username")?.toString().trim(),
+            email: fd.get("email")?.toString().trim(),
+            password: fd.get("password")?.toString(),
+        };
+
+        setStatus(registerStatus, "Creating account...", null);
+        try {
+            await request(`${API_BASE}/auth/signup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            setStatus(registerStatus, "Account created. Now login.", "success");
+            registerForm.reset();
+        } catch (err) {
+            setStatus(registerStatus, err.message, "error");
+        }
+    });
+
+    // Initial UI state
+    updateAuthUI(null);
+
+    // If already logged in, load watchlist immediately
+    if (getToken() && getStoredUserId()) {
+        window.loadWatchlist?.();
+    }
+};
+
 
 const renderEmptyState = (container, message) => {
     container.innerHTML = `<p>${message}</p>`;
@@ -578,6 +671,7 @@ const handleReviews = () => {
 
 const init = () => {
     initUserInputs();
+    handleAuth();
     handleAnimeSearch();
     handleWatchlist();
     handleReviews();
