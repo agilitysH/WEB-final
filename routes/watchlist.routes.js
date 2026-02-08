@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authJwt } from "../middlewares/index.js";
+import { authJwt } from "../middleware/index.js";
 import {
   addToWatchlist,
   getWatchlist,

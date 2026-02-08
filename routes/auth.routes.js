@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifySignUp, authJwt } from "../middlewares/index.js";
+import { verifySignUp, authJwt } from "../middleware/index.js";
 import { signup, signin, me } from "../controllers/auth.controller.js";
 
 const router = Router();
