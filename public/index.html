@@ -25,8 +25,8 @@
                     <a class="chip" href="/api">API List</a>
                 </div>
                 <div class="nav-auth">
-                    <a class="btn ghost" href="#auth" id="nav-login">Login</a>
-                    <a class="btn ghost" href="#auth" id="nav-register">Register</a>
+                    <a class="btn ghost" href="/app/login.html" id="nav-login">Login</a>
+                    <a class="btn ghost" href="/app/register.html" id="nav-register">Register</a>
                     <button class="btn ghost" type="button" id="nav-logout" style="display:none;">Logout</button>
                     <span class="chip" id="nav-user" style="display:none;"></span>
                 </div>
@@ -63,54 +63,6 @@
 
         <main>
 
-            <section id="auth" class="section">
-                <div class="section-header">
-                    <div>
-                        <p class="eyebrow">Account</p>
-                        <h2>Login / Register</h2>
-                    </div>
-                    <p class="section-note" id="auth-state">Not signed in.</p>
-                </div>
-
-                <div class="panel-grid two-col">
-                    <form id="login-form" class="panel">
-                        <div class="panel-title">Login</div>
-                        <label>
-                            Username
-                            <input name="username" required />
-                        </label>
-                        <label>
-                            Password
-                            <input name="password" type="password" required />
-                        </label>
-                        <div class="panel-actions">
-                            <button class="btn primary" type="submit">Login</button>
-                            <button class="btn ghost" type="button" id="logout-btn" style="display:none;">Logout</button>
-                        </div>
-                        <div id="login-status" class="status" aria-live="polite"></div>
-                    </form>
-
-                    <form id="register-form" class="panel">
-                        <div class="panel-title">Register</div>
-                        <label>
-                            Username
-                            <input name="username" required />
-                        </label>
-                        <label>
-                            Email
-                            <input name="email" type="email" required />
-                        </label>
-                        <label>
-                            Password
-                            <input name="password" type="password" required />
-                        </label>
-                        <div class="panel-actions">
-                            <button class="btn primary" type="submit">Create account</button>
-                        </div>
-                        <div id="register-status" class="status" aria-live="polite"></div>
-                    </form>
-                </div>
-            </section>
             <section id="anime" class="section">
                 <div class="section-header">
                     <div>
@@ -200,9 +152,19 @@
                             <input type="text" name="userId" id="watchlist-user" placeholder="Mongo user id" />
                         </label>
                         <label>
-                            Anime ID
-                            <input type="number" name="animeId" required />
+                            Anime
+                            <input
+                                type="text"
+                                name="animeSearch"
+                                id="watchlist-anime-search"
+                                placeholder="Start typing a title..."
+                                autocomplete="off"
+                            />
                         </label>
+                        <input type="hidden" name="animeId" id="watchlist-anime-id" required />
+                        <input type="hidden" name="episodesTotal" id="watchlist-anime-episodes" />
+                        <div class="suggestions hidden" id="watchlist-anime-suggestions" role="listbox"></div>
+                        <div class="picker-meta" id="watchlist-anime-meta">No anime selected.</div>
                         <label>
                             Title
                             <input type="text" name="title" required />
@@ -222,7 +184,10 @@
                         </label>
                         <label>
                             Score
-                            <input type="number" name="score" min="1" max="10" placeholder="1-10" />
+                            <div class="star-picker" data-max="10">
+                                <div class="stars" role="radiogroup" aria-label="Score"></div>
+                                <input type="hidden" name="score" id="watchlist-score" />
+                            </div>
                         </label>
                         <div class="panel-actions">
                             <button class="btn primary" type="submit">Add</button>
@@ -257,12 +222,24 @@
                             <input type="text" name="userId" id="reviews-user" placeholder="Mongo user id" />
                         </label>
                         <label>
-                            Anime ID
-                            <input type="number" name="animeId" id="reviews-anime" required />
+                            Anime
+                            <input
+                                type="text"
+                                name="animeSearch"
+                                id="reviews-anime-search"
+                                placeholder="Start typing a title..."
+                                autocomplete="off"
+                            />
                         </label>
+                        <input type="hidden" name="animeId" id="reviews-anime" required />
+                        <div class="suggestions hidden" id="reviews-anime-suggestions" role="listbox"></div>
+                        <div class="picker-meta" id="reviews-anime-meta">No anime selected.</div>
                         <label>
                             Rating
-                            <input type="number" name="rating" min="1" max="10" required />
+                            <div class="star-picker" data-max="10">
+                                <div class="stars" role="radiogroup" aria-label="Rating"></div>
+                                <input type="hidden" name="rating" id="reviews-rating" />
+                            </div>
                         </label>
                         <label>
                             Review

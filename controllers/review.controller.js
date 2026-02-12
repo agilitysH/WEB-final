@@ -5,7 +5,7 @@ const { Review } = db;
 
 export const createReview = async (req, res) => {
     const { animeId, reviewText, rating } = req.body;
-    const userId = req.body.userId || req.userId;
+    const userId = req.userId;
 
     if (!userId || !animeId || !reviewText || rating === undefined) {
         return res.status(400).json({ message: "userId, animeId, reviewText, and rating are required." });
@@ -41,6 +41,10 @@ export const updateReview = async (req, res) => {
     const { reviewText, rating } = req.body;
     const updates = {};
 
+    if (!req.userId) {
+        return res.status(401).json({ message: "Unauthorized!" });
+    }
+
     if (reviewText !== undefined) {
         updates.reviewText = reviewText;
     }
@@ -53,11 +57,16 @@ export const updateReview = async (req, res) => {
     }
 
     try {
-        const updated = await Review.findByIdAndUpdate(id, updates, { new: true });
-        if (!updated) {
+        const review = await Review.findById(id);
+        if (!review) {
             return res.status(404).json({ message: "Review not found." });
         }
+        if (review.user.toString() !== req.userId) {
+            return res.status(403).json({ message: "Forbidden." });
+        }
 
+        Object.assign(review, updates);
+        const updated = await review.save();
         return res.json(reviewItemView(updated));
     } catch (error) {
         return res.status(500).json({ message: "Failed to update review.", error: error.message });
@@ -67,12 +76,20 @@ export const updateReview = async (req, res) => {
 export const deleteReview = async (req, res) => {
     const { id } = req.params;
 
+    if (!req.userId) {
+        return res.status(401).json({ message: "Unauthorized!" });
+    }
+
     try {
-        const removed = await Review.findByIdAndDelete(id);
-        if (!removed) {
+        const review = await Review.findById(id);
+        if (!review) {
             return res.status(404).json({ message: "Review not found." });
         }
+        if (review.user.toString() !== req.userId) {
+            return res.status(403).json({ message: "Forbidden." });
+        }
 
+        await Review.findByIdAndDelete(id);
         return res.json({ message: "Review deleted." });
     } catch (error) {
         return res.status(500).json({ message: "Failed to delete review.", error: error.message });

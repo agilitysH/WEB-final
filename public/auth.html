@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>AniNexus Account Access</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="styles.css" />
+        <script src="app.js" defer></script>
+    </head>
+    <body>
+        <div class="ambient-grid"></div>
+        <header class="hero">
+            <nav class="top-nav">
+                <div class="brand">AniNexus</div>
+                <div class="nav-links">
+                    <a href="/app/index.html#anime">Anime</a>
+                    <a href="/app/index.html#watchlist">Watchlist</a>
+                    <a href="/app/index.html#reviews">Reviews</a>
+                    <a class="chip" href="/api">API List</a>
+                </div>
+                <div class="nav-auth">
+                    <a class="btn ghost" href="/app/login.html" id="nav-login">Login</a>
+                    <a class="btn ghost" href="/app/register.html" id="nav-register">Register</a>
+                    <button class="btn ghost" type="button" id="nav-logout" style="display:none;">Logout</button>
+                    <span class="chip" id="nav-user" style="display:none;"></span>
+                </div>
+            </nav>
+            <div class="hero-content">
+                <div>
+                    <p class="eyebrow">Account</p>
+                    <h1>Sign in or create a new AniNexus profile.</h1>
+                    <p class="subtitle">
+                        Access your watchlist, publish reviews, and keep everything synced across
+                        the control deck.
+                    </p>
+                </div>
+                <div class="hero-panel">
+                    <div class="hero-metric">
+                        <span>Auth</span>
+                        <strong>JWT + MongoDB</strong>
+                    </div>
+                    <div class="hero-metric">
+                        <span>Session</span>
+                        <strong>Token stored locally</strong>
+                    </div>
+                    <div class="hero-metric">
+                        <span>Next</span>
+                        <strong>Back to /app</strong>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="auth" class="section">
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">Account</p>
+                        <h2>Login / Register</h2>
+                    </div>
+                    <p class="section-note" id="auth-state">Not signed in.</p>
+                </div>
+
+                <div class="panel-grid two-col">
+                    <div class="panel">
+                        <div class="panel-title">Login</div>
+                        <p class="section-note">Sign in to access your watchlist and reviews.</p>
+                        <div class="panel-actions">
+                            <a class="btn primary" href="/app/login.html">Go to Login</a>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Register</div>
+                        <p class="section-note">Create a new AniNexus account in seconds.</p>
+                        <div class="panel-actions">
+                            <a class="btn primary" href="/app/register.html">Create account</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>
